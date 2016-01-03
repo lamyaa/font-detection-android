@@ -84,16 +84,10 @@ public class LabelActivity extends AppCompatActivity {
         protected List<Rect> doInBackground(Bitmap... params) {
             image = params[0];
 
-            URL segmentUrl = null;
-            try {
-                segmentUrl = new URL(BACKEND_ENDPOINT);
-            } catch (MalformedURLException e) {
-                Log.e(TAG, "Unable to parse backend url", e);
-            }
-
             List<Rect> rects = new LinkedList<>();
             HttpURLConnection connection = null;
             try {
+                URL segmentUrl = new URL(BACKEND_ENDPOINT);
                 connection = (HttpURLConnection) segmentUrl.openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
