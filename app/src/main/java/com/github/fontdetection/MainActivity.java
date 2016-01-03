@@ -107,13 +107,12 @@ public class MainActivity extends AppCompatActivity {
     private void setPictureAfterCapture() {
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         ContentResolver contentResolver = getContentResolver();
-        Uri pictureUri = imageUri;
-        contentResolver.notifyChange(pictureUri, null);
+        contentResolver.notifyChange(imageUri, null);
         try {
-            Bitmap picture = MediaStore.Images.Media.getBitmap(contentResolver, pictureUri);
+            Bitmap picture = MediaStore.Images.Media.getBitmap(contentResolver, imageUri);
             imageView.setImageBitmap(picture);
         } catch (IOException e) {
-            Log.e(TAG, "Unable to retrieve picture: " + pictureUri, e);
+            Log.e(TAG, "Unable to retrieve picture: " + imageUri, e);
         }
     }
 
