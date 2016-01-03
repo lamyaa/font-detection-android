@@ -24,7 +24,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_LOAD_IMAGE = 1;
     private static final int REQUEST_CAPTURE_IMAGE = 2;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private Uri imageUri;
 

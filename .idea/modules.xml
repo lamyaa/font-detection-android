@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FontDetection.iml" filepath="$PROJECT_DIR$/FontDetection.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/font-detection-android.iml" filepath="$PROJECT_DIR$/font-detection-android.iml" />
     </modules>
   </component>
 </project>
