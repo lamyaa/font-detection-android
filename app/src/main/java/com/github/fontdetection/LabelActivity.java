@@ -56,7 +56,7 @@ public class LabelActivity extends AppCompatActivity {
             }
         });
 
-        Button segment = (Button) findViewById(R.id.buttonBrowse);
+        Button segment = (Button) findViewById(R.id.buttonSegment);
         segment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
