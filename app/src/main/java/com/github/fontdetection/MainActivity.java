@@ -9,7 +9,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,7 +24,9 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_LOAD_IMAGE = 1;
     private static final int REQUEST_CAPTURE_IMAGE = 2;
-    private Uri imageUri; //TODO: this is ugly. Find a way to pass it even if intent becomes null
+    private static final String TAG = "MainActivity";
+
+    private Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,19 +48,19 @@ public class MainActivity extends AppCompatActivity {
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 File photoFile = null;
                 try {
-                    //we need this to get the full-sized picture
+                    // Need this to get the full-sized picture
                     photoFile = createImageFile();
-                } catch (IOException ex) {
-                    //TODO: We should add some logging
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to create image file", e);
                 }
-                // Continue only if the File was successfully created
+
+                // Continue only if the file was successfully created
                 if (photoFile != null) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     imageUri = Uri.fromFile(photoFile);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                            imageUri);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     startActivityForResult(intent, REQUEST_CAPTURE_IMAGE);
                 }
             }
@@ -67,49 +71,49 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode != RESULT_OK) {
-            return;
-        }
-
         switch (requestCode) {
-            case REQUEST_LOAD_IMAGE: setPictureAfterLoad(data);
+            case REQUEST_LOAD_IMAGE:
+                if (resultCode == RESULT_OK) {
+                    setPictureAfterLoad(data);
+                }
                 break;
-            case REQUEST_CAPTURE_IMAGE: setPictureAfterCapture(data);
+            case REQUEST_CAPTURE_IMAGE:
+                if (resultCode == RESULT_OK) {
+                    setPictureAfterCapture();
+                }
+                break;
+            default:
+                Log.e(TAG, "Invalid request code: " + requestCode);
                 break;
         }
     }
 
-    private void setPictureAfterLoad(Intent data) {
-        if (data == null)
-            return;
+    private void setPictureAfterLoad(@NonNull Intent data) {
         Uri selectedImage = data.getData();
         String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-        String picturePath = null;
         try (Cursor cursor = getContentResolver().query(selectedImage, filePathColumn,
                 null, null, null)) {
             if (cursor != null) {
                 cursor.moveToFirst();
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                picturePath = cursor.getString(columnIndex);
+                String picturePath = cursor.getString(columnIndex);
+
+                ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
             }
         }
-
-        ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
     }
 
-    private void setPictureAfterCapture(Intent data) {
+    private void setPictureAfterCapture() {
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        ContentResolver cr = getContentResolver();
+        ContentResolver contentResolver = getContentResolver();
         Uri pictureUri = imageUri;
-        cr.notifyChange(pictureUri, null);
-        Bitmap picture;
+        contentResolver.notifyChange(pictureUri, null);
         try {
-            picture = android.provider.MediaStore.Images.Media.getBitmap(cr, pictureUri);
+            Bitmap picture = MediaStore.Images.Media.getBitmap(contentResolver, pictureUri);
             imageView.setImageBitmap(picture);
-        } catch (Exception e) {
-            //TODO: logging
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to retrieve picture: " + pictureUri, e);
         }
     }
 
