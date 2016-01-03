@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +33,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class LabelActivity extends AppCompatActivity {
     private static final String TAG = LabelActivity.class.getSimpleName();
-    private static final String IMAGE_PATH_KEY = "image_path";
 
     private List<Rect> segments;
 
@@ -44,7 +42,7 @@ public class LabelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_label);
         Bundle extras = getIntent().getExtras();
 
-        String imagePath = extras.getString(IMAGE_PATH_KEY);
+        String imagePath = extras.getString(MainActivity.IMAGE_PATH_KEY);
         final Bitmap image = BitmapFactory.decodeFile(imagePath);
 
         ImageView imageView = (ImageView) findViewById(R.id.imageView2);

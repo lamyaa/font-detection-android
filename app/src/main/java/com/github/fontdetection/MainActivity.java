@@ -3,8 +3,6 @@ package com.github.fontdetection;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_LOAD_IMAGE = 1;
     private static final int REQUEST_CAPTURE_IMAGE = 2;
     private static final String TAG = MainActivity.class.getSimpleName();
+    public static final String IMAGE_PATH_KEY = "com.github.fontdetection.IMAGE_PATH";
 
     private Uri imageUri;
 
@@ -97,23 +95,22 @@ public class MainActivity extends AppCompatActivity {
                 cursor.moveToFirst();
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 String picturePath = cursor.getString(columnIndex);
-
-                ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                //Starting LabelActivity
+                Intent intent = new Intent(this, LabelActivity.class);
+                intent.putExtra(IMAGE_PATH_KEY, picturePath);
+                startActivity(intent);
             }
         }
     }
 
     private void setPictureAfterCapture() {
-        ImageView imageView = (ImageView) findViewById(R.id.imageView);
         ContentResolver contentResolver = getContentResolver();
         contentResolver.notifyChange(imageUri, null);
-        try {
-            Bitmap picture = MediaStore.Images.Media.getBitmap(contentResolver, imageUri);
-            imageView.setImageBitmap(picture);
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to retrieve picture: " + imageUri, e);
-        }
+        //Starting LabelActivity
+        Intent intent = new Intent(this, LabelActivity.class);
+        File imageFile = new File(imageUri.getPath());
+        intent.putExtra(IMAGE_PATH_KEY, imageFile.getAbsolutePath());
+        startActivity(intent);
     }
 
     private File createImageFile() throws IOException {
